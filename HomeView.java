@@ -7,69 +7,98 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class HomeView extends JPanel {
+    private static final Color PANEL_BACKGROUND_COLOR = new Color(217, 217, 217);
+    private static final int LABEL_FONT_SIZE_1 = 42;
+    private static final int LABEL_FONT_SIZE_2 = 32;
+    private static final int LABEL_FONT_SIZE_3 = 16;
+    private static final int BUTTON_FONT_SIZE = 16;
+
+    private JTextField userField;
+    private JPasswordField passField;
+
     public HomeView() {
-        setLayout(null); // Use null layout for manual positioning
+        setLayout(null);
 
-        Color c1 = new Color(217, 217, 217);
+        setBackground(PANEL_BACKGROUND_COLOR);
 
-        JLabel titleLabel0 = new JLabel(" STUDENT");
-        titleLabel0.setFont(new Font("Inter", Font.BOLD, 42));
-        titleLabel0.setBounds(78 , 125 , 242 , 91); // Adjust these values as needed
+        JLabel titleLabel0 = createLabel(" STUDENT", LABEL_FONT_SIZE_1, 78, 125, 242, 91);
         add(titleLabel0);
 
-        JLabel titleLabel1 = new JLabel(" GRADE");
-        titleLabel1.setFont(new Font("Inter", Font.BOLD, 32));
-        titleLabel1.setBounds(78 , 153 , 242 , 91); // Adjust these values as needed
+        JLabel titleLabel1 = createLabel(" GRADE", LABEL_FONT_SIZE_2, 78, 153, 242, 91);
         add(titleLabel1);
 
-        JLabel titleLabel2 = new JLabel(" SYSTEM");
-        titleLabel2.setFont(new Font("Inter", Font.BOLD, 32));
-        titleLabel2.setBounds(78 , 178 , 242 , 91); // Adjust these values as needed
+        JLabel titleLabel2 = createLabel(" SYSTEM", LABEL_FONT_SIZE_2, 78, 178, 242, 91);
         add(titleLabel2);
 
-        JLabel loginLabel = new JLabel(" LOGIN");
-        loginLabel.setFont(new Font("Inter", Font.PLAIN, 36));
-        loginLabel.setBounds(530 , 68 , 141 , 43); // Adjust these values as needed
+        JLabel loginLabel = createLabel(" LOGIN", LABEL_FONT_SIZE_3, 530, 68, 141, 43);
         add(loginLabel);
 
-        JLabel userLabel = new JLabel(" ENTER USERNAME: ");
-        userLabel.setFont(new Font("Inter", Font.PLAIN, 16));
-        userLabel.setBounds(335 , 145 , 159 , 37 ); // Adjust these values as needed
+        JLabel userLabel = createLabel(" ENTER USERNAME: ", LABEL_FONT_SIZE_3, 335, 145, 159, 37);
         add(userLabel);
 
-        JTextField userField = new JTextField();
-        userField.setBounds(500 , 145 , 202 , 33); // Adjust these values as needed
+        userField = createTextField(500, 145, 202, 33);
         add(userField);
 
-        JLabel passLabel = new JLabel(" ENTER PASSWORD: ");
-        passLabel.setFont(new Font("Inter", Font.PLAIN, 16));
-        passLabel.setBounds( 335 , 210 , 180 , 37); // Adjust these values as needed
+        JLabel passLabel = createLabel(" ENTER PASSWORD: ", LABEL_FONT_SIZE_3, 335, 210, 180, 37);
         add(passLabel);
 
-        JPasswordField passField = new JPasswordField();
-        passField.setBounds(500 , 210 , 202 , 33); // Adjust these values as needed
+        passField = createPasswordField(500, 210, 202, 33);
         add(passField);
 
-        JButton loginButton = new JButton("LOGIN");
-        loginButton.setFont(new Font("Inter", Font.BOLD, 16));
-        loginButton.setBounds(535 , 280 , 108 , 40); // Adjust these values as needed
-
+        JButton loginButton = createButton("LOGIN", BUTTON_FONT_SIZE, 535, 280, 108, 40);
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String username = userField.getText();
                 String password = new String(passField.getPassword());
 
-                if (LoginService.authenticate(username, password)) {
-                    // If the credentials match, show the admin panel
-                    MainFrame.showAdminPanel();
+                String userType = LoginService.authenticate(username, password);
+
+                if (userType != null) {
+                    switch (userType) {
+                        case "Admin":
+                            MainFrame.showAdminPanel();
+                            break;
+                        case "Student":
+                            MainFrame.showStudentPanel(username);
+                            break;
+                        case "Subject Teacher":
+                            MainFrame.showSubjectTeacherPanel(username);
+                            break;
+                        default:
+                            break;
+                    }
                 } else {
                     JOptionPane.showMessageDialog(MainFrame.getMainFrame(), "Invalid username or password", "Login Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
-
         add(loginButton);
-        setBackground(c1);
+    }
+
+    private JLabel createLabel(String text, int fontSize, int x, int y, int width, int height) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Inter", Font.PLAIN, fontSize));
+        label.setBounds(x, y, width, height);
+        return label;
+    }
+
+    private JTextField createTextField(int x, int y, int width, int height) {
+        JTextField textField = new JTextField();
+        textField.setBounds(x, y, width, height);
+        return textField;
+    }
+
+    private JPasswordField createPasswordField(int x, int y, int width, int height) {
+        JPasswordField passwordField = new JPasswordField();
+        passwordField.setBounds(x, y, width, height);
+        return passwordField;
+    }
+
+    private JButton createButton(String text, int fontSize, int x, int y, int width, int height) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Inter", Font.BOLD, fontSize));
+        button.setBounds(x, y, width, height);
+        return button;
     }
 }
